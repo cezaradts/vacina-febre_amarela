@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Cobertura Vacinal Tríplice Viral 2026 por Município" },
+      { name: "description", content: "Painel com população, doses aplicadas e percentual de cobertura vacinal da tríplice viral (1ª dose) em 2026 nos municípios brasileiros." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Cobertura Vacinal Tríplice Viral 2026 por Município" },
+      { property: "og:description", content: "Painel com população, doses aplicadas e percentual de cobertura vacinal da tríplice viral (1ª dose) em 2026 nos municípios brasileiros." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Cobertura Vacinal Tríplice Viral 2026 por Município" },
+      { name: "twitter:description", content: "Painel com população, doses aplicadas e percentual de cobertura vacinal da tríplice viral (1ª dose) em 2026 nos municípios brasileiros." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7713ff65555fbbacfdb4e9dfc7995a9e/id-preview-a72ed210--d1e9410e-5b08-4daf-8e6a-ca8dec510ba6.lovable.app-1787192281398.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7713ff65555fbbacfdb4e9dfc7995a9e/id-preview-a72ed210--d1e9410e-5b08-4daf-8e6a-ca8dec510ba6.lovable.app-1787192281398.png" },
     ],
     links: [
       {

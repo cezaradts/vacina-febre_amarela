@@ -41,11 +41,11 @@ export const Route = createFileRoute("/")({
         content:
           "Painel com população, doses aplicadas e percentual de cobertura vacinal da tríplice viral (1ª dose) em 2026 nos municípios brasileiros.",
       },
-      { property: "og:title", content: "Cobertura Vacinal Tríplice Viral 2026" },
+      { property: "og:title", content: "Cobertura Vacinal Tríplice Viral 2026 por Município" },
       {
         property: "og:description",
         content:
-          "Compare municípios por população, vacinados e cobertura vacinal da tríplice viral em 2026.",
+          "Painel com população, doses aplicadas e percentual de cobertura vacinal da tríplice viral (1ª dose) em 2026 nos municípios brasileiros.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
