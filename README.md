@@ -1,14 +1,18 @@
-# Welcome to your Lovable project
+# Vacina Cidades
+
+pode constuir um site que apresente uma tela com os dados "Município", "Populaçao", "vacinados", % de vacinação, e eu possa escolher em uma aba o maior municipio com cobertura vacinal, o com menor cobertura vacinal. o banco de dados está na tabela em anexo
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://vacina-mapa-amigo.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/d1e9410e-5b08-4daf-8e6a-ca8dec510ba6).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +24,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
