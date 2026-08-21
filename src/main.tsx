@@ -1,18 +1,26 @@
 import React from 'react'
-import { createRoot } from 'react-dom/client'
+import ReactDOM from 'react-dom/client'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
 import './styles.css'
-import { App } from './App'
 
-const rootElement = document.getElementById('root')
+// Configura o router gerado pelo TanStack
+const router = createRouter({ routeTree })
 
-if (!rootElement) {
-  throw new Error('Elemento #root não encontrado')
+// Registra o router para segurança de tipos
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
 }
 
-const root = createRoot(rootElement)
+const rootElement = document.getElementById('root')!
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement)
+  root.render(
+    <React.StrictMode>
+      <RouterProvider router={router} />
+    </React.StrictMode>,
+  )
+}
