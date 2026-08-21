@@ -64,7 +64,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "menor", label: "Menor cobertura vacinal" },
 ];
 
-function Index() {
+export function Index() {
   const [tab, setTab] = useState<Tab>("todos");
   const [query, setQuery] = useState("");
   const [minPop, setMinPop] = useState(0);
