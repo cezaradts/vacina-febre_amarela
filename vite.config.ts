@@ -4,6 +4,9 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  css: {
+    transformer: "postcss",
+  },
   server: {
     host: "::",
     port: 8080,
@@ -14,5 +17,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/vacina-mapa-amigo/',
+  base: '/',
 }));
