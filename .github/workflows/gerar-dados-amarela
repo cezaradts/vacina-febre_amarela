@@ -1,10 +1,10 @@
-name: Gerar dados de Poliomielite
+name: Gerar dados de Fegre Amarela
 
 on:
   push:
     branches: [main]
     paths:
-      - "src/data/amarela_2026.xlsx"
+      - "src/data/Amarela_2026.xlsx"
       - "scripts/generate-vacinacao.mjs"
       - ".github/workflows/gerar-dados-amarela.yml"
   workflow_dispatch:
