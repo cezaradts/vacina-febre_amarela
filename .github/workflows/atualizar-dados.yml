@@ -4,7 +4,11 @@ on:
   push:
     paths:
       - "src/data/vacinacao triplice viral 2026.xlsx"
+      - ".github/workflows/atualizar-dados.yml"
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   atualizar:
@@ -17,7 +21,7 @@ jobs:
       - name: Configurar Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Instalar dependências
@@ -34,35 +38,20 @@ jobs:
 
           const workbook = XLSX.readFile(excelFile);
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const rows = XLSX.utils.sheet_to_json(sheet, {
-            header: 1,
-            defval: null
-          });
-
+          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
           const existing = JSON.parse(fs.readFileSync(jsonFile, "utf8"));
 
-          // Linha 2 do Excel contém as datas dos meses.
           const monthRow = rows[1];
-
-          // Descobre os meses pelas colunas do Excel.
           const months = [];
 
           for (let col = 2; col < monthRow.length; col += 3) {
             const serial = monthRow[col];
-
             if (typeof serial !== "number") continue;
-
             const date = XLSX.SSF.parse_date_code(serial);
-
             if (!date) continue;
-
-            const month = `${date.y}-${String(date.m).padStart(2, "0")}`;
-            months.push(month);
+            months.push(`${date.y}-${String(date.m).padStart(2, "0")}`);
           }
 
-          console.log("MESES ENCONTRADOS:", months);
-
-          // Mapa dos municípios que já existem no sistema.
           const municipalityMap = new Map(
             existing.rows.map((r) => [String(r.code).padStart(6, "0"), r])
           );
@@ -70,22 +59,16 @@ jobs:
           let atualizados = 0;
           let ignorados = 0;
 
-          // Os dados dos municípios começam na linha 5 do Excel.
           for (let i = 4; i < rows.length; i++) {
             const row = rows[i];
-
             if (!row || row.length < 5) continue;
 
             const rawCode = row[1];
-
-            if (rawCode === null || rawCode === undefined || rawCode === "") {
-              continue;
-            }
+            if (rawCode === null || rawCode === undefined || rawCode === "") continue;
 
             const code = String(rawCode).replace(".0", "").padStart(6, "0");
             const municipality = municipalityMap.get(code);
 
-            // Preserva somente municípios que já existem no JSON.
             if (!municipality) {
               ignorados++;
               continue;
@@ -96,13 +79,9 @@ jobs:
             for (let j = 0; j < months.length; j++) {
               const month = months[j];
               const base = 2 + (j * 3);
-
-              const vaccinated = Number(row[base + 1]) || 0;
-              const population = Number(row[base + 2]) || 0;
-
               municipality.months[month] = {
-                v: vaccinated,
-                p: population
+                v: Number(row[base + 1]) || 0,
+                p: Number(row[base + 2]) || 0
               };
             }
 
@@ -110,13 +89,9 @@ jobs:
           }
 
           existing.months = months;
+          fs.writeFileSync(jsonFile, JSON.stringify(existing, null, 2) + "\n", "utf8");
 
-          fs.writeFileSync(
-            jsonFile,
-            JSON.stringify(existing, null, 2) + "\n",
-            "utf8"
-          );
-
+          console.log("MESES ENCONTRADOS:", months);
           console.log("MUNICÍPIOS ATUALIZADOS:", atualizados);
           console.log("LINHAS IGNORADAS:", ignorados);
           console.log("JSON ATUALIZADO COM SUCESSO.");
@@ -129,9 +104,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add src/data/vacinacao.json
-
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos dados."
           else
