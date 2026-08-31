@@ -1,0 +1,27 @@
+name: Atualizar dados da vacinação
+
+on:
+  push:
+    paths:
+      - "src/data/vacinacao triplice viral 2026.xlsx"
+  workflow_dispatch:
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Verificar Excel
+        run: |
+          node -e "const XLSX=require('xlsx'); const f='src/data/vacinacao triplice viral 2026.xlsx'; const wb=XLSX.readFile(f); console.log('ABAS:', wb.SheetNames); const ws=wb.Sheets[wb.SheetNames[0]]; const r=XLSX.utils.sheet_to_json(ws,{header:1,defval:null}); console.log('LINHAS:',r.length); console.log('PRIMEIRO MUNICÍPIO:',r[4]);"
