@@ -13,7 +13,6 @@ permissions:
 jobs:
   atualizar:
     runs-on: ubuntu-latest
-
     steps:
       - name: Baixar projeto
         uses: actions/checkout@v4
@@ -39,66 +38,43 @@ jobs:
           const workbook = XLSX.readFile(excelFile);
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
           const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
-          const existing = JSON.parse(fs.readFileSync(jsonFile, "utf8"));
 
           const monthRow = rows[1];
           const months = [];
-
           for (let col = 2; col < monthRow.length; col += 3) {
             const serial = monthRow[col];
             if (typeof serial !== "number") continue;
             const date = XLSX.SSF.parse_date_code(serial);
-            if (!date) continue;
-            months.push(`${date.y}-${String(date.m).padStart(2, "0")}`);
+            if (date) months.push(`${date.y}-${String(date.m).padStart(2, "0")}`);
           }
 
-          const municipalityMap = new Map(
-            existing.rows.map((r) => [String(r.code).padStart(6, "0"), r])
-          );
-
-          let atualizados = 0;
-          let ignorados = 0;
+          const old = JSON.parse(fs.readFileSync(jsonFile, "utf8"));
+          const names = new Map(old.rows.map(r => [String(r.code).padStart(6, "0"), { name: r.name, uf: r.uf }]));
+          const output = [];
 
           for (let i = 4; i < rows.length; i++) {
             const row = rows[i];
-            if (!row || row.length < 5) continue;
+            if (!row || row[1] == null || row[1] === "") continue;
+            const code = String(row[1]).replace(".0", "").padStart(6, "0");
+            const known = names.get(code);
+            if (!known) continue;
 
-            const rawCode = row[1];
-            if (rawCode === null || rawCode === undefined || rawCode === "") continue;
-
-            const code = String(rawCode).replace(".0", "").padStart(6, "0");
-            const municipality = municipalityMap.get(code);
-
-            if (!municipality) {
-              ignorados++;
-              continue;
-            }
-
-            municipality.months = {};
-
+            const municipality = { code, name: known.name, uf: known.uf, months: {} };
             for (let j = 0; j < months.length; j++) {
-              const month = months[j];
-              const base = 2 + (j * 3);
-              municipality.months[month] = {
+              const base = 2 + j * 3;
+              municipality.months[months[j]] = {
                 v: Number(row[base + 1]) || 0,
                 p: Number(row[base + 2]) || 0
               };
             }
-
-            atualizados++;
+            output.push(municipality);
           }
 
-          existing.months = months;
-          fs.writeFileSync(jsonFile, JSON.stringify(existing, null, 2) + "\n", "utf8");
-
-          console.log("MESES ENCONTRADOS:", months);
-          console.log("MUNICÍPIOS ATUALIZADOS:", atualizados);
-          console.log("LINHAS IGNORADAS:", ignorados);
-          console.log("JSON ATUALIZADO COM SUCESSO.");
+          fs.writeFileSync(jsonFile, JSON.stringify({ months, rows: output }, null, 2) + "\n");
+          console.log("MESES:", months);
+          console.log("MUNICÍPIOS GERADOS:", output.length);
+          console.log("JSON GERADO A PARTIR DO EXCEL.");
           NODE
-
-      - name: Verificar alterações
-        run: git diff --stat
 
       - name: Salvar dados atualizados
         run: |
