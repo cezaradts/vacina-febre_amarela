@@ -18,10 +18,123 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Instalar dependências
-        run: npm install
+        run: npm ci
 
-      - name: Verificar Excel
+      - name: Atualizar vacinacao.json a partir do Excel
         run: |
-          node -e "const XLSX=require('xlsx'); const f='src/data/vacinacao triplice viral 2026.xlsx'; const wb=XLSX.readFile(f); console.log('ABAS:', wb.SheetNames); const ws=wb.Sheets[wb.SheetNames[0]]; const r=XLSX.utils.sheet_to_json(ws,{header:1,defval:null}); console.log('LINHAS:',r.length); console.log('PRIMEIRO MUNICÍPIO:',r[4]);"
+          node <<'NODE'
+          const XLSX = require("xlsx");
+          const fs = require("fs");
+
+          const excelFile = "src/data/vacinacao triplice viral 2026.xlsx";
+          const jsonFile = "src/data/vacinacao.json";
+
+          const workbook = XLSX.readFile(excelFile);
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet, {
+            header: 1,
+            defval: null
+          });
+
+          const existing = JSON.parse(fs.readFileSync(jsonFile, "utf8"));
+
+          // Linha 2 do Excel contém as datas dos meses.
+          const monthRow = rows[1];
+
+          // Descobre os meses pelas colunas do Excel.
+          const months = [];
+
+          for (let col = 2; col < monthRow.length; col += 3) {
+            const serial = monthRow[col];
+
+            if (typeof serial !== "number") continue;
+
+            const date = XLSX.SSF.parse_date_code(serial);
+
+            if (!date) continue;
+
+            const month = `${date.y}-${String(date.m).padStart(2, "0")}`;
+            months.push(month);
+          }
+
+          console.log("MESES ENCONTRADOS:", months);
+
+          // Mapa dos municípios que já existem no sistema.
+          const municipalityMap = new Map(
+            existing.rows.map((r) => [String(r.code).padStart(6, "0"), r])
+          );
+
+          let atualizados = 0;
+          let ignorados = 0;
+
+          // Os dados dos municípios começam na linha 5 do Excel.
+          for (let i = 4; i < rows.length; i++) {
+            const row = rows[i];
+
+            if (!row || row.length < 5) continue;
+
+            const rawCode = row[1];
+
+            if (rawCode === null || rawCode === undefined || rawCode === "") {
+              continue;
+            }
+
+            const code = String(rawCode).replace(".0", "").padStart(6, "0");
+            const municipality = municipalityMap.get(code);
+
+            // Preserva somente municípios que já existem no JSON.
+            if (!municipality) {
+              ignorados++;
+              continue;
+            }
+
+            municipality.months = {};
+
+            for (let j = 0; j < months.length; j++) {
+              const month = months[j];
+              const base = 2 + (j * 3);
+
+              const vaccinated = Number(row[base + 1]) || 0;
+              const population = Number(row[base + 2]) || 0;
+
+              municipality.months[month] = {
+                v: vaccinated,
+                p: population
+              };
+            }
+
+            atualizados++;
+          }
+
+          existing.months = months;
+
+          fs.writeFileSync(
+            jsonFile,
+            JSON.stringify(existing, null, 2) + "\n",
+            "utf8"
+          );
+
+          console.log("MUNICÍPIOS ATUALIZADOS:", atualizados);
+          console.log("LINHAS IGNORADAS:", ignorados);
+          console.log("JSON ATUALIZADO COM SUCESSO.");
+          NODE
+
+      - name: Verificar alterações
+        run: git diff --stat
+
+      - name: Salvar dados atualizados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add src/data/vacinacao.json
+
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração nos dados."
+          else
+            git commit -m "Atualiza dados de vacinação pelo Excel"
+            git push
+          fi
