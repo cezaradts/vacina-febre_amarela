@@ -6,7 +6,7 @@ on:
       - "src/data/vacinacao triplice viral 2026.xlsx"
       - ".github/workflows/atualizar-dados.yml"
   workflow_dispatch:
-
+"2
 permissions:
   contents: write
 
