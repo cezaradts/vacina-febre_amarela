@@ -1,4 +1,4 @@
-name: Gerar dados de Fegre Amarela
+name: Gerar dados de Febre Amarela
 
 on:
   push:
