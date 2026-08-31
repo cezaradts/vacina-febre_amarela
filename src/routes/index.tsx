@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import raw from "@/data/vacinacao.json";
+import raw from "../data/vacinacao.json";
 
 type Row = {
   code: string;
