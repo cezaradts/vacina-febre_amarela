@@ -35,17 +35,17 @@ const monthLabel = (m: string) => {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cobertura Vacinal Pneumocócica 2026 por Município" },
+      { title: "Cobertura Vacinal Febre Amarela 2026 por Município" },
       {
         name: "description",
         content:
-          "Painel com população, doses aplicadas e percentual de cobertura vacinal Pneumocócica em 2026 nos municípios brasileiros.",
+          "Painel com população, doses aplicadas e percentual de cobertura vacinal Febre Amarela em 2026 nos municípios brasileiros.",
       },
-      { property: "og:title", content: "Cobertura Vacinal Pneumocócica 2026 por Município" },
+      { property: "og:title", content: "Cobertura Vacinal Febre Amarela 2026 por Município" },
       {
         property: "og:description",
         content:
-          "Painel com população, doses aplicadas e percentual de cobertura vacinal Pneumocócica em 2026 nos municípios brasileiros.",
+          "Painel com população, doses aplicadas e percentual de cobertura vacinal Febre Amarela em 2026 nos municípios brasileiros.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
